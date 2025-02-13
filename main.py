@@ -19,6 +19,7 @@ class GridEnvironment:
         self.grid = np.zeros((size, size))
         self.start = None
         self.goal = None
+        self.create_obstacles()
 
     def get_neighbors(self, node):
         neighbors = []
@@ -46,27 +47,23 @@ class GridEnvironment:
                 vis[current] = True
 
                 # Case: Dead end (All neighbors are visited)
-
                 neighbors = self.get_neighbors(current)
                 if all(vis[neighbor] for neighbor in neighbors):
                     continue
 
                 # Consider a random unvisited neighbor
-
                 next_node = None
                 while not next_node or vis[next_node]:
                     next_node = rand.choice(neighbors)
 
                 # Decide whether to block the node
-
                 if rand.random() <= 0.7:
                     stack.append(next_node)
                 else:
                     self.grid[next_node] = 1
                     vis[next_node] = True
 
-env = GridEnvironment(10)
-env.create_obstacles()
+env = GridEnvironment(101)
 print(env.grid)
 
 plt.imshow(env.grid, cmap='gray_r', origin='lower')  # Use 'gray' colormap for 0 and 1
