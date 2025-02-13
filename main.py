@@ -10,6 +10,7 @@ from a node that has not been visited. This process continues until every cell h
 
 import random as rand
 import numpy as np
+import matplotlib.pyplot as plt
 
 class GridEnvironment:
 
@@ -29,36 +30,47 @@ class GridEnvironment:
 
     def create_obstacles(self):
 
-        vis = np.full((self.size, self.size), False)
-        start = (rand.randint(0, self.size-1), rand.randint(0, self.size-1))
-        vis[start] = True
+        vis = np.full((self.size, self.size), False) # Initialize all nodes as unvisited
 
-        stack = []
+        while not vis.all():
 
-        current = start
+            start = None
+            while not start or vis[start]:
+                start = (rand.randint(0, self.size - 1), rand.randint(0, self.size - 1))  # Choose a random unvisited starting node
 
-        next_node = rand.choice(self.get_neighbors(current))
-        while vis[next_node]:
-            next_node = rand.choice(self.get_neighbors(current))
+            stack = [start]
 
+            while stack:
 
+                current = stack.pop()
+                vis[current] = True
 
+                # Case: Dead end (All neighbors are visited)
 
+                neighbors = self.get_neighbors(current)
+                if all(vis[neighbor] for neighbor in neighbors):
+                    continue
 
+                # Consider a random unvisited neighbor
 
+                next_node = None
+                while not next_node or vis[next_node]:
+                    next_node = rand.choice(neighbors)
 
+                # Decide whether to block the node
 
+                if rand.random() <= 0.7:
+                    stack.append(next_node)
+                else:
+                    self.grid[next_node] = 1
+                    vis[next_node] = True
 
+env = GridEnvironment(10)
+env.create_obstacles()
+print(env.grid)
 
-
-
-
-
-
-
-
-
-
-
-
-
+plt.imshow(env.grid, cmap='gray_r', origin='lower')  # Use 'gray' colormap for 0 and 1
+plt.title("Generated Grid")
+plt.xticks([])  # Remove x-axis ticks
+plt.yticks([])  # Remove y-axis ticks
+plt.show()
