@@ -1,13 +1,3 @@
-"""
-One potential way to build the environment is the following. You can initially set all the cells as unvisited. Then you
-can start from a random cell, mark it as visited and unblocked. Select a random neighbouring cell to visit that has not yet
-been visited. With 30% probability mark it as blocked. With 70% mark it as unblocked and in this case add it to the stack.
-A cell that has no unvisited neighbours is a dead-end. When at a dead-end, your algorithm must backtrack to parent nodes
-on the search tree until it reaches a cell with an unvisited neighbour, continuing the path generation by visiting this new,
-unvisited cell. If at some point your stack is empty, and you have not yet visited all the nodes, you repeat the above process
-from a node that has not been visited. This process continues until every cell has been visited.
-"""
-
 import random as rand
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,57 +6,58 @@ class GridEnvironment:
 
     def __init__(self, size):
         self.size = size
-        self.grid = np.zeros((size, size))
+        self.grid = np.ones((size, size))
         self.start = None
         self.goal = None
-        self.create_obstacles()
+        self.create_maze()
 
     def get_neighbors(self, node):
         neighbors = []
-        for dr, dc in [(0,1), (0,-1), (1,0), (-1,0)]:
+        for dr, dc in [(0,2), (0,-2), (2,0), (-2,0)]:
             nr, nc = node[0] + dr, node[1] + dc
             if -1 < nr < self.size and -1 < nc < self.size:
                 neighbors.append((nr, nc))
         return neighbors
 
-    def create_obstacles(self):
+    def create_obstacles_badly(self):
+        for i in range(self.size):
+            for j in range(self.size):
+                if rand.random() > 0.7:
+                    self.grid[i,j] = 1
 
-        vis = np.full((self.size, self.size), False) # Initialize all nodes as unvisited
+    def create_maze(self):
+        """Generate a maze using iterative DFS."""
+        # Choose a random starting cell (ensure it's on an even index)
+        start = (rand.randint(0, (self.size - 1) // 2) * 2, rand.randint(0, (self.size - 1) // 2) * 2)
+        self.start = start
+        stack = [start]
+        self.grid[start] = 0  # Mark the starting cell as a passage
 
-        while not vis.all():
+        while stack:
+            current = stack.pop()
+            neighbors = self.get_neighbors(current)
+            unvisited_neighbors = [n for n in neighbors if self.grid[n] == 1]
 
-            start = None
-            while not start or vis[start]:
-                start = (rand.randint(0, self.size - 1), rand.randint(0, self.size - 1))  # Choose a random unvisited starting node
+            if unvisited_neighbors:
+                # Push the current cell back to the stack
+                stack.append(current)
 
-            stack = [start]
+                # Choose a random unvisited neighbor
+                next_cell = rand.choice(unvisited_neighbors)
 
-            while stack:
+                # Remove the wall between the current cell and the chosen neighbor
+                wall_row = (current[0] + next_cell[0]) // 2
+                wall_col = (current[1] + next_cell[1]) // 2
+                self.grid[wall_row, wall_col] = 0  # Carve a passage
 
-                current = stack.pop()
-                vis[current] = True
-
-                # Case: Dead end (All neighbors are visited)
-                neighbors = self.get_neighbors(current)
-                if all(vis[neighbor] for neighbor in neighbors):
-                    continue
-
-                # Consider a random unvisited neighbor
-                next_node = None
-                while not next_node or vis[next_node]:
-                    next_node = rand.choice(neighbors)
-
-                # Decide whether to block the node
-                if rand.random() <= 0.7:
-                    stack.append(next_node)
-                else:
-                    self.grid[next_node] = 1
-                    vis[next_node] = True
+                # Mark the chosen cell as visited and push it to the stack
+                self.grid[next_cell] = 0
+                stack.append(next_cell)
 
 env = GridEnvironment(101)
 print(env.grid)
 
-plt.imshow(env.grid, cmap='gray_r', origin='lower')  # Use 'gray' colormap for 0 and 1
+plt.imshow(env.grid, cmap='gray_r', origin='upper')  # Use 'gray' colormap for 0 and 1
 plt.title("Generated Grid")
 plt.xticks([])  # Remove x-axis ticks
 plt.yticks([])  # Remove y-axis ticks
