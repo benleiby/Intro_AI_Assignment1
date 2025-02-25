@@ -2,6 +2,8 @@ import random as rand
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import os
+import pickle
 
 class GridEnvironment:
 
@@ -64,5 +66,38 @@ class GridEnvironment:
         plt.xticks([]), plt.yticks([])
         plt.show()
 
-env = GridEnvironment(101)
-env.visualize_maze()
+def create_mazes(count, output_directory):
+
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
+    for i in range(count):
+        env = GridEnvironment(101)
+        filepath = os.path.join(output_directory, "maze" + str(i) + ".pkl")
+
+        try:
+            with open(filepath, "wb") as file:
+                pickle.dump(env, file, pickle.HIGHEST_PROTOCOL)
+            del env
+        except Exception as e:
+            print("Error loading objects: " + e)
+
+def load_mazes(directory):
+
+    loaded_mazes = {}
+
+    if not os.path.exists(directory):
+        print("Invalid directory")
+        return loaded_mazes
+
+    for filename in os.listdir(directory):
+        if filename.endswith(".pkl"):
+            name = filename[:-4]
+            filepath = os.path.join(directory, filename)
+            try:
+                with open(filepath, 'rb') as file:
+                    loaded_mazes[name] = pickle.load(file)
+            except Exception as e:
+                print(f"Error loading object '{name}': {e}")
+    print("Success loading " + str(len(loaded_mazes)) + " objects.")
+    return loaded_mazes
