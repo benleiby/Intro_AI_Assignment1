@@ -7,3 +7,14 @@
 # c × f (s) − g(s) as priorities to break ties in favor of cells with larger g-values, where c is a constant larger than the largest
 # g-value of any generated cell. For the explanation part, consider which cells both versions of Repeated Forward A* expand
 # for the example search problem from Figure 9.]
+
+import Environments
+
+env = Environments.GridEnvironment(21)
+env.visualize_maze()
+
+def repeated_forward_astar_large_g(maze, heuristic):
+    return None
+
+def repeated_forward_astar_small_g(maze, heuristic):
+    return None

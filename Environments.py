@@ -66,6 +66,13 @@ class GridEnvironment:
         plt.xticks([]), plt.yticks([])
         plt.show()
 
+    def get_heuristic(self):
+        h = {}
+        for i in range(len(self.grid)):
+            for j in range(len(self.grid)):
+                h[(i,j)] = abs(i - self.goal[0]) + abs(j - self.goal[1])
+        return h
+
 def create_mazes(count, output_directory):
 
     if not os.path.exists(output_directory):
@@ -101,3 +108,9 @@ def load_mazes(directory):
                 print(f"Error loading object '{name}': {e}")
     print("Success loading " + str(len(loaded_mazes)) + " objects.")
     return loaded_mazes
+
+env = GridEnvironment(21)
+
+heuristic = env.get_heuristic()
+
+print(heuristic)
