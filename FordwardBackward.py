@@ -1,0 +1,5 @@
+# Part 3 - Forward vs. Backward [20 points]: Implement and compare Repeated Forward A* and Repeated Backward A*
+# with respect to their runtime or, equivalently, number of expanded cells. Explain your observations in detail, that is, explain
+# what you observed and give a reason for the observation. Both versions of Repeated A* should break ties among cells with
+# the same f-value in favor of cells with larger g-values and remaining ties in an identical way, for example randomly.
+

@@ -1,0 +1,5 @@
+# Part 5 - Heuristics in the Adaptive A* [15 points]: Implement and compare Repeated Forward A* and Adaptive A*
+# with respect to their runtime. Explain your observations in detail, that is, explain what you observed and give a reason for
+# the observation. Both search algorithms should break ties among cells with the same f-value in favor of cells with larger
+# g-values and remaining ties in an identical way, for example randomly.
+
