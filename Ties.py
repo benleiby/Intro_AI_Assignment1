@@ -8,8 +8,9 @@
 # g-value of any generated cell. For the explanation part, consider which cells both versions of Repeated Forward A* expand
 # for the example search problem from Figure 9.]
 
-import Environments
+
 import heapq
+from Environments import GridEnvironment
 
 class PriorityQueue:
     def __init__(self, items=None):
@@ -68,3 +69,6 @@ def compute_path(maze, heuristic):
                 open_set.push((f_neighbor, neighbor))
 
     return None
+
+env = GridEnvironment(101)
+env.visualize_maze(None)

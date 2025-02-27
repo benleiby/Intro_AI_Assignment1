@@ -7,7 +7,7 @@ def main():
 
     # Dictionary to store maze objects. Keys: [maze0...maze49]
     mazes = Environments.load_mazes("test_mazes")
-    mazes["maze10"].visualize_maze()
+    mazes["maze10"].visualize_maze(None)
 
 if __name__ == "__main__":
     main()
