@@ -22,6 +22,16 @@ class GridEnvironment:
                 neighbors.append((nr, nc))
         return neighbors
 
+    def get_actions(self, node):
+        actions = []
+        r, c = node
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if -1 < nr < self.size and -1 < nc < self.size:
+                if self.grid[nr, nc] != 1:
+                    actions.append((nr, nc))
+        return actions
+
     def create_obstacles_badly(self):
         for i in range(self.size):
             for j in range(self.size):
@@ -52,14 +62,19 @@ class GridEnvironment:
                 self.grid[next_cell] = 0
                 stack.append(next_cell)
 
-    def visualize_maze(self):
-        cmap = mcolors.ListedColormap(['white', 'black', 'blue', 'green'])
-        bounds = [0, 1, 2, 3, 4]
+    def visualize_maze(self, path):
+        cmap = mcolors.ListedColormap(['white', 'black', 'blue', 'green', 'red'])
+        bounds = [0, 1, 2, 3, 4, 5]
         norm = mcolors.BoundaryNorm(bounds, cmap.N)
 
         visualization_grid = np.copy(self.grid)
         visualization_grid[self.start] = 2
         visualization_grid[self.goal] = 3
+
+        if path:
+            for node in path:
+                if node != self.start and node != self.goal:
+                    visualization_grid[node] = 4
 
         plt.figure(figsize=(6, 6))
         plt.imshow(visualization_grid, cmap=cmap, norm=norm)
@@ -108,9 +123,3 @@ def load_mazes(directory):
                 print(f"Error loading object '{name}': {e}")
     print("Success loading " + str(len(loaded_mazes)) + " objects.")
     return loaded_mazes
-
-env = GridEnvironment(21)
-
-heuristic = env.get_heuristic()
-
-print(heuristic)
