@@ -42,6 +42,17 @@ class PriorityQueue:
     def contains(self, val):
         return any(n == val for _, n in self._heap)
 
+    def empty(self):
+        return len(self._heap) == 0
+
+    def to_string(self):
+        output = ""
+        for item in self._heap:
+            output += str(item)
+        return output
+
+
+
 def reconstruct_path(tree, goal):
     path = [goal]  # Start with the goal node
     current = goal
@@ -62,9 +73,9 @@ def main_procedure(maze, h):
         for j in range(len(maze.grid)):
             search[(i,j)] = 0
 
-    while start != goal:
+    while start != goal and counter < 20:
 
-        counter += 1
+        counter = counter + 1
         g[start] = 0
         search[start] = counter
         g[goal] = float('inf')
@@ -75,21 +86,26 @@ def main_procedure(maze, h):
         f_start = g[start] + h[start]
         open_set.push((f_start, start))
 
+        print("g: " + str(g))
+        print("search: " + str(search))
+        print("___________________________")
+
         path = compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter)
 
-        print(path)
+        print("path: " + str(path))
 
         if not open_set:
             print("cannot reach target")
             return None
 
-        for i in range(1, len(path)):  # start at 1 to avoid index error.
+        for i in range(1, len(path)):
             if maze.grid[path[i][0]][path[i][1]] == 1:
                 print("stop at: " + str(start))
+                print("___________________________")
                 break
             else:
+                g[path[i]] = g[start] + i
                 start = path[i]
-
 
 def compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter):
 
@@ -100,6 +116,10 @@ def compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter)
 
         min_f, s = open_set.pop()
         closed_set.add(s)
+
+        print(f"Current Node: {s}")
+        print(f"Open Set: {open_set.to_string()}")
+        print(f"Closed Set: {closed_set}")
 
         if s == start:
             all_neighbors = maze.get_actions(s)
@@ -125,7 +145,7 @@ def compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter)
 
     return reconstruct_path(tree, goal)
 
-env = GridEnvironment(9)
+env = GridEnvironment(3)
 env.visualize_maze(None)
 main_procedure(env, env.get_heuristic())
 
