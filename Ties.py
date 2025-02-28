@@ -11,6 +11,7 @@
 
 import heapq
 from Environments import GridEnvironment
+import numpy as np
 
 class PriorityQueue:
     def __init__(self, items=None):
@@ -74,10 +75,9 @@ def main_procedure(maze, h):
         f_start = g[start] + h[start]
         open_set.push((f_start, start))
 
-        path = compute_path(maze, goal, g, open_set, h, closed_set, search, counter)
+        path = compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter)
 
         print(path)
-
 
         if not open_set:
             print("cannot reach target")
@@ -85,13 +85,13 @@ def main_procedure(maze, h):
 
         for i in range(1, len(path)):  # start at 1 to avoid index error.
             if maze.grid[path[i][0]][path[i][1]] == 1:
-                print("breaking")
+                print("stop at: " + str(start))
                 break
             else:
                 start = path[i]
 
 
-def compute_path(maze, goal, g, open_set, h, closed_set, search, counter):
+def compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter):
 
     tree = {}
 
@@ -101,12 +101,21 @@ def compute_path(maze, goal, g, open_set, h, closed_set, search, counter):
         min_f, s = open_set.pop()
         closed_set.add(s)
 
-        for neighbor in maze.get_actions(s):
+        if s == start:
+            all_neighbors = maze.get_actions(s)
+            neighbors = []
+            for neighbor in all_neighbors:
+                if maze.grid[neighbor[0]][neighbor[1]] != 1:  # check if neighbor is not blocked.
+                    neighbors.append(neighbor)
+        else:
+            neighbors = maze.get_actions(s)
+
+        for neighbor in neighbors:
 
             if search[neighbor] < counter:
                 g[neighbor] = float('inf')
                 search[neighbor] = counter
-            if g[neighbor] > g[s] + 1:
+            if g[neighbor] > g[s] + 1:  # check for inf first.
                 g[neighbor] = g[s] + 1
                 tree[neighbor] = s
                 if open_set.contains(neighbor):
