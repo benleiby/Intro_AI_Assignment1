@@ -28,7 +28,8 @@ class GridEnvironment:
         for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
             nr, nc = r + dr, c + dc
             if -1 < nr < self.size and -1 < nc < self.size:
-                actions.append((nr, nc))
+                if self.grid[nr, nc] != 1:
+                    actions.append((nr, nc))
         return actions
 
     def create_obstacles_badly(self):
