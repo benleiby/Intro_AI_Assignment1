@@ -8,7 +8,6 @@
 # g-value of any generated cell. For the explanation part, consider which cells both versions of Repeated Forward A* expand
 # for the example search problem from Figure 9.]
 
-
 import heapq
 from Environments import GridEnvironment
 import numpy as np
@@ -51,8 +50,6 @@ class PriorityQueue:
             output += str(item)
         return output
 
-
-
 def reconstruct_path(tree, goal):
     path = [goal]  # Start with the goal node
     current = goal
@@ -62,19 +59,21 @@ def reconstruct_path(tree, goal):
     return path[::-1]  # Reverse the path to get it from start to goal
 
 def main_procedure(maze, h):
-
-    counter = 0
+    counter = 0  # Maintain count of paths computed
     start = maze.start
     goal = maze.goal
-    g = {}
+    g =  {} # Cost
 
-    search = {}
+    search = {} # Each state stores a search flag that indicates which search iteration last visited it
     for i in range(len(maze.grid)):
         for j in range(len(maze.grid)):
-            search[(i,j)] = 0
+            state = (i,j)
+            search[state] = 0
+            g[state] = float('inf')
 
-    while start != goal and counter < 20:
+    while start != goal:
 
+        tree = {}
         counter = counter + 1
         g[start] = 0
         search[start] = counter
@@ -83,71 +82,120 @@ def main_procedure(maze, h):
         open_set = PriorityQueue()
         closed_set = set()
 
-        f_start = g[start] + h[start]
-        open_set.push((f_start, start))
+        open_set.push(((g[start] + h[start]), start))
 
-        print("g: " + str(g))
-        print("search: " + str(search))
-        print("___________________________")
+        compute_path(maze, open_set, closed_set, search, counter, g, h, goal, tree)
 
-        path = compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter)
+        path = reconstruct_path(tree, goal)
+        for i in range(len(path)):
 
-        print("path: " + str(path))
-
-        if not open_set:
-            print("cannot reach target")
-            return None
-
-        for i in range(1, len(path)):
-            if maze.grid[path[i][0]][path[i][1]] == 1:
-                print("stop at: " + str(start))
-                print("___________________________")
+            if maze.grid[path[i]] == 1:
                 break
-            else:
-                g[path[i]] = g[start] + i
-                start = path[i]
 
-def compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter):
+            start = path[i]
 
-    tree = {}
+def compute_path(maze, open_set, closed_set, search, counter, g, h, goal, tree):
 
-    min_f, s  = open_set.peek()
-    while g[goal] > min_f:
+    while not open_set.is_empty():
+        current_f, current_state = open_set.pop()
+        if current_state == goal:
+            break
 
-        min_f, s = open_set.pop()
-        closed_set.add(s)
+        current_f, current_state = open_set.pop()
+        closed_set.add(current_state)
 
-        print(f"Current Node: {s}")
-        print(f"Open Set: {open_set.to_string()}")
-        print(f"Closed Set: {closed_set}")
-
-        if s == start:
-            all_neighbors = maze.get_actions(s)
-            neighbors = []
-            for neighbor in all_neighbors:
-                if maze.grid[neighbor[0]][neighbor[1]] != 1:  # check if neighbor is not blocked.
-                    neighbors.append(neighbor)
-        else:
-            neighbors = maze.get_actions(s)
-
-        for neighbor in neighbors:
+        for neighbor in maze.get_actions(current_state):
 
             if search[neighbor] < counter:
                 g[neighbor] = float('inf')
                 search[neighbor] = counter
-            if g[neighbor] > g[s] + 1:  # check for inf first.
-                g[neighbor] = g[s] + 1
-                tree[neighbor] = s
+
+            tentative_g = g[current_state] + 1
+            if tentative_g < g[neighbor]:
+                g[neighbor] = tentative_g
+                tree[neighbor] = current_state
+
                 if open_set.contains(neighbor):
                     open_set.remove(neighbor)
+
                 neighbor_f = g[neighbor] + h[neighbor]
                 open_set.push((neighbor_f, neighbor))
 
-    return reconstruct_path(tree, goal)
-
-env = GridEnvironment(3)
-env.visualize_maze(None)
-main_procedure(env, env.get_heuristic())
+# def main_procedure(maze, h):
+#
+#     counter = 0
+#     start = maze.start
+#     goal = maze.goal
+#     g = {}
+#     tree = {}
+#
+#     search = {}
+#     for i in range(len(maze.grid)):
+#         for j in range(len(maze.grid)):
+#             search[(i,j)] = 0
+#
+#     while start != goal:
+#
+#         counter = counter + 1
+#         g[start] = 0
+#         search[start] = counter
+#         g[goal] = float('inf')
+#         search[goal] = counter
+#         open_set = PriorityQueue()
+#         closed_set = set()
+#
+#         f_start = g[start] + h[start]
+#         open_set.push((f_start, start))
+#
+#         path = compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter, tree)
+#
+#         if not open_set:
+#             print("cannot reach target")
+#             return None
+#
+#         for i in range(1, len(path)):
+#             if maze.grid[path[i][0]][path[i][1]] == 1:
+#                 break
+#             else:
+#
+#                 g[path[i]] = g[start] + i
+#                 start = path[i]
+#
+# def compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter, tree):
+#
+#     min_f, s  = open_set.peek()
+#     while g[goal] > min_f:
+#
+#         min_f, s = open_set.pop()
+#         closed_set.add(s)
+#
+#         if s == start:
+#             all_neighbors = maze.get_actions(s)
+#             neighbors = []
+#             for neighbor in all_neighbors:
+#                 if maze.grid[neighbor[0]][neighbor[1]] != 1:  # check if neighbor is not blocked.
+#                     neighbors.append(neighbor)
+#         else:
+#             neighbors = maze.get_actions(s)
+#
+#         for neighbor in neighbors:
+#
+#             if search[neighbor] < counter:
+#                 g[neighbor] = float('inf')
+#                 search[neighbor] = counter
+#             if g[neighbor] > g[s] + 1:
+#                 g[neighbor] = g[s] + 1
+#                 tree[neighbor] = s
+#                 if open_set.contains(neighbor):
+#                     open_set.remove(neighbor)
+#                 neighbor_f = g[neighbor] + h[neighbor]
+#                 open_set.push((neighbor_f, neighbor))
+#
+#     return reconstruct_path(tree, goal)
+#
+# env = GridEnvironment(3)
+# env.visualize_maze(None)
+# main_procedure(env, env.get_heuristic())
 
 # def compute_path(maze, heuristic):
 #
@@ -179,5 +227,7 @@ main_procedure(env, env.get_heuristic())
 #
 #     return None
 
+que = PriorityQueue()
+que.push((10101, (10,10)))
 
-
+print(que.peek()[0])
