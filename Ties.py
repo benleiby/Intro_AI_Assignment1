@@ -29,14 +29,12 @@ class PriorityQueue:
     def __len__(self):
         return len(self._heap)
 
-    def remove(self, neighbor):  # Changed 'item' to 'neighbor' for clarity
-        """Removes the first tuple with the given neighbor from the queue."""
+    def remove(self, neighbor):
         for i, (_, n) in enumerate(self._heap):
             if n == neighbor:
                 del self._heap[i]
                 heapq.heapify(self._heap)
-                return  # Exit after removing the first occurrence
-        # If the loop completes, the neighbor was not found
+                return
 
     def contains(self, val):
         return any(n == val for _, n in self._heap)
