@@ -10,6 +10,9 @@
 
 import heapq
 
+from Environments import GridEnvironment
+
+
 class PriorityQueue:
     def __init__(self, items=None):
         self._heap = items if items is not None else []
@@ -70,7 +73,7 @@ def compute_path(maze, heuristic):
 
         closed_set.add(current)
 
-        for neighbor in maze.get_actions(current):
+        for neighbor in maze.get_actions(current, True):
             tentative_g = g_values[current] + 1
 
             if neighbor in closed_set and tentative_g >= g_values.get(neighbor, float('inf')):
@@ -185,10 +188,9 @@ NON FUNCTIONAL
 #
 #         for i in range(1, len(path)):
 #             if maze.grid[path[i][0]][path[i][1]] == 1:
+#                 g[path[i]] = float('inf')
 #                 break
 #             else:
-#
-#                 g[path[i]] = g[start] + i
 #                 start = path[i]
 #
 # def compute_path(maze, start, goal, g, open_set, h, closed_set, search, counter, tree):

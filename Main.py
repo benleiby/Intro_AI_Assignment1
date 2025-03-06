@@ -15,6 +15,5 @@ def main():
     path = Ties.compute_path(test, test.get_heuristic())
     test.visualize_maze(path)
 
-
 if __name__ == "__main__":
     main()

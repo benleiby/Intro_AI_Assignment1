@@ -14,6 +14,8 @@ class GridEnvironment:
         self.goal = (size - 1, size - 1)
         self.create_maze()
 
+    # Used for maze generation.
+    # Neighbors are separated from current by 1 wall node.
     def get_neighbors(self, node):
         neighbors = []
         for dr, dc in [(0,2), (0,-2), (2,0), (-2,0)]:
@@ -22,21 +24,19 @@ class GridEnvironment:
                 neighbors.append((nr, nc))
         return neighbors
 
-    def get_actions(self, node):
+    # Used for calculating shortest paths in a*.
+    # Actions are defined by the next nodes an agent can move to (in 4 directions).
+    def get_actions(self, node, consider_obstacles):
         actions = []
         r, c = node
         for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
             nr, nc = r + dr, c + dc
             if -1 < nr < self.size and -1 < nc < self.size:
-                if self.grid[nr, nc] != 1:
+                if consider_obstacles and self.grid[nr, nc] != 1:
+                    actions.append((nr, nc))
+                elif not consider_obstacles:
                     actions.append((nr, nc))
         return actions
-
-    def create_obstacles_badly(self):
-        for i in range(self.size):
-            for j in range(self.size):
-                if rand.random() > 0.7:
-                    self.grid[i,j] = 1
 
     def create_maze(self):
         start = (rand.randint(0, (self.size - 1) // 2) * 2, rand.randint(0, (self.size - 1) // 2) * 2)
