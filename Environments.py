@@ -38,6 +38,14 @@ class GridEnvironment:
                     actions.append((nr, nc))
         return actions
 
+    def create_random_environment(self):
+        for i in range(self.size):
+            for j in range(self.size):
+                node = (i,j)
+                if node != self.start and node != self.goal:
+                    self.grid[node] = rand.choice([0, 1])
+
+
     def create_maze(self):
         start = (rand.randint(0, (self.size - 1) // 2) * 2, rand.randint(0, (self.size - 1) // 2) * 2)
         stack = [start]

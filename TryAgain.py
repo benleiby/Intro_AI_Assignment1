@@ -1,8 +1,11 @@
 import PriorityQueue
 import Environments
 from Environments import GridEnvironment
+import matplotlib as plt
 
 def reconstruct_path(tree, goal):
+    if not tree:
+        return []
     path = [goal]
     current = goal
     while current in tree:
@@ -35,9 +38,12 @@ def compute_path(
                 neighbor_f = g[neighbor] + h[neighbor]
                 open_set.push((neighbor_f, neighbor))
 
+        if not open_set:
+            return {}
+
     return tree
 
-def main(problem: GridEnvironment , h: {}) -> {}:
+def main(problem: GridEnvironment , h: {}) -> []:
     counter = 0
     search = {}
     g = {}
@@ -56,6 +62,8 @@ def main(problem: GridEnvironment , h: {}) -> {}:
 
     goal = problem.goal
 
+    main_path = [start]
+
     while start != goal:
         counter += 1
         g[start] = 0
@@ -66,14 +74,16 @@ def main(problem: GridEnvironment , h: {}) -> {}:
         closed_set = set()
         start_f = g[start] + h[start]
         open_set.push((start_f, start))
+
         shortest_unblocked_path = reconstruct_path(compute_path(
             problem, h, counter, search, g, start, goal, open_set, closed_set, c
         ), goal)
 
         print(shortest_unblocked_path)
 
-        if not open_set:
-            return {False: "Cannot Reach Goal"}
+        if not open_set or not shortest_unblocked_path:
+            print("Cannot reach goal")
+            return []
 
         # Move agent along the path from start to goal until it reaches goal
         # OR one or more action costs on the path increase
@@ -86,20 +96,14 @@ def main(problem: GridEnvironment , h: {}) -> {}:
                 c[next_state] = float('inf')
                 break
             else:
+                main_path.append(next_state)
                 start = next_state
 
-    return {True: "Reached Goal"}
+    print("reached goal")
+    return main_path
 
-test = Environments.GridEnvironment(101)
-heuristic = test.get_heuristic()
+test = Environments.GridEnvironment(9)
 test.visualize_maze(None)
-
-print(main(test, heuristic))
-
-
-
-
-
-
-
-
+heuristic = test.get_heuristic()
+test_path = main(test, heuristic)
+test.visualize_maze(test_path)
