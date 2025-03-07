@@ -43,7 +43,8 @@ class GridEnvironment:
             for j in range(self.size):
                 node = (i,j)
                 if node != self.start and node != self.goal:
-                    self.grid[node] = rand.choice([0, 1])
+                    if rand.random() < 0.8:
+                        self.grid[node] = 0
 
 
     def create_maze(self):
@@ -70,24 +71,19 @@ class GridEnvironment:
                 self.grid[next_cell] = 0
                 stack.append(next_cell)
 
-    def visualize_maze(self, path):
-        cmap = mcolors.ListedColormap(['white', 'black', 'blue', 'green', 'red'])
-        bounds = [0, 1, 2, 3, 4, 5]
-        norm = mcolors.BoundaryNorm(bounds, cmap.N)
-
+    def get_next_frame(self, walk, calculated_path):
         visualization_grid = np.copy(self.grid)
         visualization_grid[self.start] = 2
-        visualization_grid[self.goal] = 3
-
-        if path:
-            for node in path:
+        visualization_grid[self.goal] = 2
+        if calculated_path:
+            for node in calculated_path:
+                if node != self.start and node != self.goal:
+                    visualization_grid[node] = 3
+        if walk:
+            for node in walk:
                 if node != self.start and node != self.goal:
                     visualization_grid[node] = 4
-
-        plt.figure(figsize=(6, 6))
-        plt.imshow(visualization_grid, cmap=cmap, norm=norm)
-        plt.xticks([]), plt.yticks([])
-        plt.show()
+        return visualization_grid
 
     def get_heuristic(self):
         h = {}

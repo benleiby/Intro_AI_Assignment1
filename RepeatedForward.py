@@ -1,7 +1,8 @@
-import PriorityQueue
+from PriorityQueue import PriorityQueue
 import Environments
 from Environments import GridEnvironment
-import matplotlib as plt
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 def reconstruct_path(tree, goal):
     if not tree:
@@ -43,7 +44,18 @@ def compute_path(
 
     return tree
 
-def main(problem: GridEnvironment , h: {}) -> []:
+def main(problem: GridEnvironment , h: {}, visualize: bool) -> []:
+
+    if visualize:
+        cmap = mcolors.ListedColormap(['white', 'black', 'green', 'blue', 'red'])
+        bounds = [0, 1, 2, 3, 4, 5]
+        norm = mcolors.BoundaryNorm(bounds, cmap.N)
+        plt.interactive(True)
+        plt.figure(figsize=(6,6))
+        image_object = plt.imshow(problem.get_next_frame(None, None), cmap=cmap, norm=norm)  # Initial plot
+        plt.xticks([]), plt.yticks([])
+        plt.show()
+
     counter = 0
     search = {}
     g = {}
@@ -70,7 +82,7 @@ def main(problem: GridEnvironment , h: {}) -> []:
         search[start] = counter
         g[goal] = float('inf')
         search[goal] = counter
-        open_set = PriorityQueue.PriorityQueue()
+        open_set = PriorityQueue()
         closed_set = set()
         start_f = g[start] + h[start]
         open_set.push((start_f, start))
@@ -79,7 +91,10 @@ def main(problem: GridEnvironment , h: {}) -> []:
             problem, h, counter, search, g, start, goal, open_set, closed_set, c
         ), goal)
 
-        print(shortest_unblocked_path)
+        if visualize:
+            image_object.set_data(problem.get_next_frame(main_path, shortest_unblocked_path))
+            plt.draw()
+            plt.pause(0.01)
 
         if not open_set or not shortest_unblocked_path:
             print("Cannot reach goal")
@@ -104,11 +119,10 @@ def main(problem: GridEnvironment , h: {}) -> []:
                 main_path.append(next_state)
                 start = next_state
 
+    if visualize:
+        plt.interactive(False)
+        plt.imshow(problem.get_next_frame(main_path, None), cmap=cmap, norm=norm)
+        plt.draw_all()
+        plt.show()
     print("reached goal")
     return main_path
-
-test = Environments.GridEnvironment(9)
-test.visualize_maze(None)
-heuristic = test.get_heuristic()
-test_path = main(test, heuristic)
-test.visualize_maze(test_path)
