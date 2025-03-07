@@ -89,7 +89,12 @@ def main(problem: GridEnvironment , h: {}) -> []:
         # OR one or more action costs on the path increase
         while True:
             next_state = shortest_unblocked_path.pop(0)
-            if next_state == goal:
+            if next_state == start:
+                pass
+            elif not next_state:
+                print("Cannot reach goal")
+                return []
+            elif next_state == goal:
                 start = goal
                 break
             elif problem.grid[next_state] == 1:
