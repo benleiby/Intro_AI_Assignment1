@@ -75,14 +75,14 @@ class GridEnvironment:
         visualization_grid = np.copy(self.grid)
         visualization_grid[self.start] = 2
         visualization_grid[self.goal] = 2
-        if calculated_path:
-            for node in calculated_path:
-                if node != self.start and node != self.goal:
-                    visualization_grid[node] = 3
         if walk:
             for node in walk:
                 if node != self.start and node != self.goal:
                     visualization_grid[node] = 4
+        if calculated_path:
+            for node in calculated_path:
+                if node != self.start and node != self.goal:
+                    visualization_grid[node] = 3
         return visualization_grid
 
     def get_heuristic(self):

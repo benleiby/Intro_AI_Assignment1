@@ -18,14 +18,14 @@ class PriorityQueue:
         return len(self._heap)
 
     def remove(self, neighbor):
-        for i, (_, n) in enumerate(self._heap):
+        for i, (_, _, n) in enumerate(self._heap):
             if n == neighbor:
                 del self._heap[i]
                 heapq.heapify(self._heap)
                 return
 
     def contains(self, val):
-        return any(n == val for _, n in self._heap)
+        return any(n == val for _, _, n in self._heap)
 
     def empty(self):
         return len(self._heap) == 0
@@ -35,3 +35,7 @@ class PriorityQueue:
         for item in self._heap:
             output += str(item)
         return output
+
+test = PriorityQueue()
+
+test.push((1, 5, (18,19)))

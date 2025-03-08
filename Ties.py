@@ -10,6 +10,7 @@
 
 from Environments import GridEnvironment
 import RepeatedForward
+from PriorityQueue import PriorityQueue
 
-test = GridEnvironment(33)
-path = RepeatedForward.main(test, test.get_heuristic(), True)
+test = GridEnvironment(101)
+path = RepeatedForward.main(test, test.get_heuristic(), True, True)

@@ -1,5 +1,4 @@
 from PriorityQueue import PriorityQueue
-import Environments
 from Environments import GridEnvironment
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
@@ -16,13 +15,14 @@ def reconstruct_path(tree, goal):
 
 def compute_path(
         problem, h, counter, search, g, start,
-        goal, open_set, closed_set, c
+        goal, open_set, closed_set, c, large_g
 ):
 
     tree = {} # Search tree representing the shortest unblocked path
 
     while g[goal] > open_set.peek()[0]:
-        current_f, current = open_set.pop()
+
+        current_f, current_g, current = open_set.pop()
         closed_set.add(current)
 
         for neighbor in problem.get_actions(current, False):
@@ -37,14 +37,19 @@ def compute_path(
                     open_set.remove(neighbor)
 
                 neighbor_f = g[neighbor] + h[neighbor]
-                open_set.push((neighbor_f, neighbor))
+
+                if large_g:
+                    open_set.push((neighbor_f, -g[neighbor], neighbor))
+                else:
+                    open_set.push((neighbor_f, g[neighbor], neighbor))
 
         if not open_set:
             return {}
 
     return tree
 
-def main(problem: GridEnvironment , h: {}, visualize: bool) -> []:
+# Set large_g = true / false to specify tie breaking procedure
+def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []:
 
     if visualize:
         cmap = mcolors.ListedColormap(['white', 'black', 'green', 'blue', 'red'])
@@ -85,10 +90,14 @@ def main(problem: GridEnvironment , h: {}, visualize: bool) -> []:
         open_set = PriorityQueue()
         closed_set = set()
         start_f = g[start] + h[start]
-        open_set.push((start_f, start))
+
+        if large_g:
+            open_set.push((start_f, -g[start], start))
+        else:
+            open_set.push((start_f, g[start], start))
 
         shortest_unblocked_path = reconstruct_path(compute_path(
-            problem, h, counter, search, g, start, goal, open_set, closed_set, c
+            problem, h, counter, search, g, start, goal, open_set, closed_set, c, large_g
         ), goal)
 
         if visualize:
@@ -124,5 +133,6 @@ def main(problem: GridEnvironment , h: {}, visualize: bool) -> []:
         plt.imshow(problem.get_next_frame(main_path, None), cmap=cmap, norm=norm)
         plt.draw_all()
         plt.show()
+
     print("reached goal")
     return main_path
