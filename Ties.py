@@ -11,7 +11,7 @@
 import Environments
 import RepeatedForward
 import time
-
+import RepeatedForward
 mazes = Environments.load_mazes("test_mazes")
 heuristic = mazes["maze1"].get_heuristic()
 
@@ -33,3 +33,4 @@ for maze in mazes:
 
     print("Small G Time Elapsed: " + str(small_g_elapsed))
 
+ 
