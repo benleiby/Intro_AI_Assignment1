@@ -35,7 +35,3 @@ class PriorityQueue:
         for item in self._heap:
             output += str(item)
         return output
-
-test = PriorityQueue()
-
-test.push((1, 5, (18,19)))

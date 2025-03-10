@@ -8,9 +8,28 @@
 # g-value of any generated cell. For the explanation part, consider which cells both versions of Repeated Forward A* expand
 # for the example search problem from Figure 9.]
 
-from Environments import GridEnvironment
+import Environments
 import RepeatedForward
-from PriorityQueue import PriorityQueue
+import time
 
-test = GridEnvironment(101)
-path = RepeatedForward.main(test, test.get_heuristic(), True, True)
+mazes = Environments.load_mazes("test_mazes")
+heuristic = mazes["maze1"].get_heuristic()
+
+for maze in mazes:
+
+    print("Testing: " + maze)
+
+    large_g_start = time.perf_counter()
+    RepeatedForward.main(mazes[maze], heuristic, True, True)
+    large_g_end = time.perf_counter()
+    large_g_elapsed = large_g_end - large_g_start
+
+    print("Large G Time Elapsed: " + str(large_g_elapsed))
+
+    small_g_start = time.perf_counter()
+    RepeatedForward.main(mazes[maze], heuristic, True, False)
+    small_g_end = time.perf_counter()
+    small_g_elapsed = small_g_end - small_g_start
+
+    print("Small G Time Elapsed: " + str(small_g_elapsed))
+

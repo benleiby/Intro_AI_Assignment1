@@ -23,6 +23,7 @@ def compute_path(
     while g[goal] > open_set.peek()[0]:
 
         current_f, current_g, current = open_set.pop()
+
         closed_set.add(current)
 
         for neighbor in problem.get_actions(current, False):
@@ -48,7 +49,6 @@ def compute_path(
 
     return tree
 
-# Set large_g = true / false to specify tie breaking procedure
 def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []:
 
     if visualize:
@@ -97,7 +97,8 @@ def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []
             open_set.push((start_f, g[start], start))
 
         shortest_unblocked_path = reconstruct_path(compute_path(
-            problem, h, counter, search, g, start, goal, open_set, closed_set, c, large_g
+            problem, h, counter, search, g, start, goal,
+            open_set, closed_set, c, large_g,
         ), goal)
 
         if visualize:
@@ -106,7 +107,7 @@ def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []
             plt.pause(0.01)
 
         if not open_set or not shortest_unblocked_path:
-            print("Cannot reach goal")
+            print("Cannot reach goal.")
             return []
 
         # Move agent along the path from start to goal until it reaches goal
@@ -116,7 +117,7 @@ def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []
             if next_state == start:
                 pass
             elif not next_state:
-                print("Cannot reach goal")
+                print("Cannot reach goal.")
                 return []
             elif next_state == goal:
                 start = goal
@@ -134,5 +135,5 @@ def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []
         plt.draw_all()
         plt.show()
 
-    print("reached goal")
+    print("Reached goal.")
     return main_path
