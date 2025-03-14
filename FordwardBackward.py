@@ -2,10 +2,14 @@
 # with respect to their runtime or, equivalently, number of expanded cells. Explain your observations in detail, that is, explain
 # what you observed and give a reason for the observation. Both versions of Repeated A* should break ties among cells with
 # the same f-value in favor of cells with larger g-values and remaining ties in an identical way, for example randomly.
+
 from PriorityQueue import PriorityQueue
 from Environments import GridEnvironment
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import Environments
+import time
+import RepeatedForward
 
 def reconstruct_path(tree, goal):
     if not tree:
@@ -15,7 +19,7 @@ def reconstruct_path(tree, goal):
     while current in tree:
         current = tree[current]
         path.append(current)
-    return path[::-1]
+    return path
 
 def compute_path(
         problem, h, counter, search, g, start,
@@ -53,7 +57,7 @@ def compute_path(
 
     return tree
 
-def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []:
+def main_procedure(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []:
 
     if visualize:
         cmap = mcolors.ListedColormap(['white', 'black', 'green', 'blue', 'red'])
@@ -76,36 +80,44 @@ def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []
             search[state] = 0
             c[state] = 1  # c(action: neighbors(state) -> state)
 
+    goal = problem.goal
     start = problem.start
+
     for neighbor in problem.get_actions(start, False):
         if problem.grid[neighbor] == 1:
             c[neighbor] = float('inf')
 
-    start = problem.goal  # Swap start and goal
-    goal = problem.start
-    
-
     main_path = [start]
 
     while start != goal:
+
+        # counter += 1
+        # g[start] = 0
+        # search[start] = counter
+        # g[goal] = float('inf')
+        # search[goal] = counter
+        # open_set = PriorityQueue()
+        # closed_set = set()
+        # start_f = g[start] + h[start]
+
         counter += 1
-        g[start] = 0
-        search[start] = counter
-        g[goal] = float('inf')
+        g[goal] = 0
         search[goal] = counter
+        g[start] = float('inf')
+        search[start] = counter
         open_set = PriorityQueue()
         closed_set = set()
-        start_f = g[start] + h[start]
+        goal_f = g[goal] + h[goal]
 
         if large_g:
-            open_set.push((start_f, -g[start], start))
+            open_set.push((goal_f, -g[goal], goal))
         else:
-            open_set.push((start_f, g[start], start))
+            open_set.push((goal_f, g[goal], goal))
 
         shortest_unblocked_path = reconstruct_path(compute_path(
-            problem, h, counter, search, g, start, goal,
+            problem, h, counter, search, g, goal, start,
             open_set, closed_set, c, large_g,
-        ), goal)
+        ), start)
 
         if visualize:
             image_object.set_data(problem.get_next_frame(main_path, shortest_unblocked_path))
@@ -115,10 +127,6 @@ def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []
         if not open_set or not shortest_unblocked_path:
             print("Cannot reach goal.")
             return []
-
-
-        shortest_unblocked_path.reverse()  # Reverse path 
-    
 
         # Move agent along the path from start to goal until it reaches goal
         # OR one or more action costs on the path increase
@@ -147,3 +155,25 @@ def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []
 
     print("Reached goal.")
     return main_path
+
+mazes = Environments.load_mazes("test_mazes")
+backwards_heuristic = mazes["maze1"].get_backwards_heuristic()
+heuristic = mazes["maze1"].get_heuristic()
+
+for maze in mazes:
+
+    print("Testing: " + maze)
+
+    forward_start = time.perf_counter()
+    RepeatedForward.main_procedure(mazes[maze], heuristic, False, True)
+    forward_end = time.perf_counter()
+    forward_elapsed = forward_end - forward_start
+
+    print("Repeated Forward Time Elapsed: " + str(forward_elapsed))
+
+    backward_start = time.perf_counter()
+    main_procedure(mazes[maze], backwards_heuristic, False, True)
+    backward_end = time.perf_counter()
+    backward_elapsed = backward_end - backward_start
+
+    print("Repeated Backward Time Elapsed: " + str(backward_elapsed))

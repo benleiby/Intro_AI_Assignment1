@@ -92,6 +92,13 @@ class GridEnvironment:
                 h[(i,j)] = abs(i - self.goal[0]) + abs(j - self.goal[1])
         return h
 
+    def get_backwards_heuristic(self):
+        h = {}
+        for i in range(len(self.grid)):
+            for j in range(len(self.grid)):
+                h[(i, j)] = abs(i - self.start[0]) + abs(j - self.start[1])
+        return h
+
 def create_mazes(count, output_directory):
 
     if not os.path.exists(output_directory):

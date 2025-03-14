@@ -9,9 +9,9 @@
 # for the example search problem from Figure 9.]
 
 import Environments
-import RepeatedForward
 import time
 import RepeatedForward
+
 mazes = Environments.load_mazes("test_mazes")
 heuristic = mazes["maze1"].get_heuristic()
 
@@ -20,14 +20,14 @@ for maze in mazes:
     print("Testing: " + maze)
 
     large_g_start = time.perf_counter()
-    RepeatedForward.main(mazes[maze], heuristic, True, True)
+    RepeatedForward.main_procedure(mazes[maze], heuristic, False, True)
     large_g_end = time.perf_counter()
     large_g_elapsed = large_g_end - large_g_start
 
     print("Large G Time Elapsed: " + str(large_g_elapsed))
 
     small_g_start = time.perf_counter()
-    RepeatedForward.main(mazes[maze], heuristic, True, False)
+    RepeatedForward.main_procedure(mazes[maze], heuristic, False, False)
     small_g_end = time.perf_counter()
     small_g_elapsed = small_g_end - small_g_start
 

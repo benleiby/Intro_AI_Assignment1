@@ -49,7 +49,7 @@ def compute_path(
 
     return tree
 
-def main(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []:
+def main_procedure(problem: GridEnvironment , h: {}, visualize: bool, large_g: bool) -> []:
 
     if visualize:
         cmap = mcolors.ListedColormap(['white', 'black', 'green', 'blue', 'red'])
