@@ -156,17 +156,17 @@ if __name__ == "__main__":
 
     for maze in mazes:
 
-        print("Testing: " + maze)
-
-        forward_start = time.perf_counter()
-        RepeatedForward.main_procedure(mazes[maze], heuristic, True, True)
-        forward_end = time.perf_counter()
-        forward_elapsed = forward_end - forward_start
-
-        print("Repeated Forward Time Elapsed: " + str(forward_elapsed))
+        # print("Testing: " + maze)
+        #
+        # forward_start = time.perf_counter()
+        # RepeatedForward.main_procedure(mazes[maze], heuristic, False, True)
+        # forward_end = time.perf_counter()
+        # forward_elapsed = forward_end - forward_start
+        #
+        # print("Repeated Forward Time Elapsed: " + str(forward_elapsed))
 
         adaptive_start = time.perf_counter()
-        main_procedure(mazes[maze], heuristic, True, True)
+        main_procedure(mazes[maze], heuristic, False, True)
         adaptive_end = time.perf_counter()
         adaptive_elapsed = adaptive_end - adaptive_start
 

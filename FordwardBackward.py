@@ -156,24 +156,25 @@ def main_procedure(problem: GridEnvironment , h: {}, visualize: bool, large_g: b
     print("Reached goal.")
     return main_path
 
-mazes = Environments.load_mazes("test_mazes")
-backwards_heuristic = mazes["maze1"].get_backwards_heuristic()
-heuristic = mazes["maze1"].get_heuristic()
+if __name__ == "__main__":
+    mazes = Environments.load_mazes("test_mazes")
+    backwards_heuristic = mazes["maze1"].get_backwards_heuristic()
+    heuristic = mazes["maze1"].get_heuristic()
 
-for maze in mazes:
+    for maze in mazes:
 
-    print("Testing: " + maze)
+        # print("Testing: " + maze)
+        #
+        # forward_start = time.perf_counter()
+        # RepeatedForward.main_procedure(mazes[maze], heuristic, True, True)
+        # forward_end = time.perf_counter()
+        # forward_elapsed = forward_end - forward_start
+        #
+        # print("Repeated Forward Time Elapsed: " + str(forward_elapsed))
 
-    forward_start = time.perf_counter()
-    RepeatedForward.main_procedure(mazes[maze], heuristic, False, True)
-    forward_end = time.perf_counter()
-    forward_elapsed = forward_end - forward_start
+        backward_start = time.perf_counter()
+        main_procedure(mazes[maze], backwards_heuristic, True, False)
+        backward_end = time.perf_counter()
+        backward_elapsed = backward_end - backward_start
 
-    print("Repeated Forward Time Elapsed: " + str(forward_elapsed))
-
-    backward_start = time.perf_counter()
-    main_procedure(mazes[maze], backwards_heuristic, False, True)
-    backward_end = time.perf_counter()
-    backward_elapsed = backward_end - backward_start
-
-    print("Repeated Backward Time Elapsed: " + str(backward_elapsed))
+        print("Repeated Backward Time Elapsed: " + str(backward_elapsed))
