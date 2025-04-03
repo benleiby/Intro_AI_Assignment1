@@ -111,7 +111,7 @@ def main_procedure(problem: GridEnvironment , h: {}, visualize: bool, large_g: b
         ), goal)
 
         for state in closed_set:
-            h[state] = g[goal] - g[state]
+            h[state] = g[goal] - g[state] # update heuristic for each visited state
 
         if visualize:
             image_object.set_data(problem.get_next_frame(main_path, shortest_unblocked_path))

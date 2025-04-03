@@ -80,7 +80,7 @@ def main_procedure(problem: GridEnvironment , h: {}, visualize: bool, large_g: b
             search[state] = 0
             c[state] = 1  # c(action: neighbors(state) -> state)
 
-    goal = problem.goal
+    goal = problem.goal # reverse for backwards
     start = problem.start
 
     for neighbor in problem.get_actions(start, False):
@@ -158,7 +158,7 @@ def main_procedure(problem: GridEnvironment , h: {}, visualize: bool, large_g: b
 
 if __name__ == "__main__":
     mazes = Environments.load_mazes("test_mazes")
-    backwards_heuristic = mazes["maze1"].get_backwards_heuristic()
+    backwards_heuristic = mazes["maze1"].get_backwards_heuristic() # use backwards heuristic
     heuristic = mazes["maze1"].get_heuristic()
 
     for maze in mazes:
